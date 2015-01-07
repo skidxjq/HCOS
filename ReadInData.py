@@ -3,6 +3,7 @@ import csv
 
 
 def covertMetadataToArr(filePath):
+    # todo use thread
     csvDict = {}
     with open(filePath, 'r') as f:
         rd = csv.reader(f)
