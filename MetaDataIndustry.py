@@ -1,9 +1,12 @@
 import xml.dom.minidom
+import FileUtil
 
 
 def getAllMetadataIndustryType(configFilePath):
     domTree = xml.dom.minidom.parse(configFilePath)
-
+    if not FileUtil.isFileValid(configFilePath, '.xml'):
+        print 'metadata industry config file path is not valid, please check.'
+        return
     collection = domTree.documentElement
     types = collection.getElementsByTagName('industryType')
     typesArray = []

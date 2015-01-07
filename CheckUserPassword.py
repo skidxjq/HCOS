@@ -1,8 +1,12 @@
 import xml.dom.minidom
+import FileUtil
 
 
-def check(userName, password):
-    domTree = xml.dom.minidom.parse("users.xml")
+def check(configFilePath, userName, password):
+    if not FileUtil.isFileValid(configFilePath, '.xml'):
+        print 'user config file path is not valid, please check.'
+        return
+    domTree = xml.dom.minidom.parse(configFilePath)
     collection = domTree.documentElement
     users = collection.getElementsByTagName("user")
 
@@ -13,5 +17,6 @@ def check(userName, password):
             return True
     return False
 
+
 if __name__ == '__main__':
-    print check('bob',123)
+    print check('users.xml', 'bob', 123)

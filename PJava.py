@@ -1,4 +1,5 @@
 import os
+import FileUtil
 
 
 class JavaDirective(object):
@@ -9,7 +10,7 @@ class JavaDirective(object):
         self.__check_file_path()
 
     def __check_file_path(self):
-        self.is_created_successfully = os.path.isfile(self.filePath) and self.filePath.endswith('.java')
+        self.is_created_successfully = FileUtil.isFileValid(self.filePath, '.java')
         if not self.is_created_successfully:
             print 'invalid file path, please input again'
 
@@ -31,7 +32,7 @@ class JavaDirective(object):
 
 
 if __name__ == '__main__':
-    a = JavaDirective('b.java')
+    a = JavaDirective('A.java')
     print a.is_created_successfully
     a.javac()
     a.java()
