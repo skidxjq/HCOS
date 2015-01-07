@@ -3,4 +3,8 @@
         <userName>alice</userName>
         <passWord>123456</passWord>
     </user>
+    <user>
+        <userName>bob</userName>
+        <passWord>123</passWord>
+    </user>
 </users>
