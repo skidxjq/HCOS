@@ -12,3 +12,6 @@ def check(userName, password):
         if userName == userNameGot and str(password) == passwordGot:
             return True
     return False
+
+if __name__ == '__main__':
+    print check('bob',123)
