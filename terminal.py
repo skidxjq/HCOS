@@ -11,6 +11,7 @@ class Shell(object):
 
     def __init__(self):
         self.dbHelper = None
+        # todo read from config file
         self.dbHelper = MysqlHelper.DB("localhost", 3306, "root", "", "metadata")
 
     def execute(self):
@@ -22,6 +23,7 @@ class Shell(object):
             directive = raw_input('HCOS>')
 
             if directive == 'metadata industry -a' or directive == 'metadata industry -all':
+                # todo read from config file
                 metaDataTypeArray = MetaDataIndustry.getAllMetadataIndustryType('metadataIndustry.xml')
                 for index in range(len(metaDataTypeArray)):
                     print str(index + 1) + '. ' + metaDataTypeArray[index]
@@ -32,38 +34,22 @@ class Shell(object):
                     for index in range(len(data)):
                         print str(index + 1) + '. ' + data[index][0]
 
-            elif directive == 'metadata get police/people':
+            elif directive == 'metadata get police/people' \
+                    or directive == 'metadata get police/items' \
+                    or directive == 'metadata get police/events' \
+                    or directive == 'metadata get police/orgs' \
+                    or directive == 'metadata get police/locations':
                 if self.dbHelper is not None:
+                    categoryDict = {
+                        'people': '人员要素',
+                        'items': '物品要素',
+                        'events': '案(事)件要素',
+                        'orgs': '机构要素',
+                        'locations': '地点要素'
+                    }
                     data = self.dbHelper.query(
-                        "select tableDescription, tableName from tables  where category='人员要素' group by tableName")
-                    for index in range(len(data)):
-                        print '%s %s' % (data[index][1].rstrip('\r\n'), data[index][0].rstrip('\r\n'))
-
-            elif directive == 'metadata get police/items':
-                if self.dbHelper is not None:
-                    data = self.dbHelper.query(
-                        "select tableDescription, tableName from tables  where category='物品要素' group by tableName")
-                    for index in range(len(data)):
-                        print '%s %s' % (data[index][1].rstrip('\r\n'), data[index][0].rstrip('\r\n'))
-
-            elif directive == 'metadata get police/events':
-                if self.dbHelper is not None:
-                    data = self.dbHelper.query(
-                        "select tableDescription, tableName from tables  where category='案(事)件要素' group by tableName")
-                    for index in range(len(data)):
-                        print '%s %s' % (data[index][1].rstrip('\r\n'), data[index][0].rstrip('\r\n'))
-
-            elif directive == 'metadata get police/orgs':
-                if self.dbHelper is not None:
-                    data = self.dbHelper.query(
-                        "select tableDescription, tableName from tables  where category='机构要素' group by tableName")
-                    for index in range(len(data)):
-                        print '%s %s' % (data[index][1].rstrip('\r\n'), data[index][0].rstrip('\r\n'))
-
-            elif directive == 'metadata get police/locations':
-                if self.dbHelper is not None:
-                    data = self.dbHelper.query(
-                        "select tableDescription, tableName from tables  where category='地点要素' group by tableName")
+                        "select tableDescription, tableName from tables  where category='" + categoryDict[
+                            directive[len('metadata get police/'):]] + "' group by tableName")
                     for index in range(len(data)):
                         print '%s %s' % (data[index][1].rstrip('\r\n'), data[index][0].rstrip('\r\n'))
 
@@ -144,6 +130,8 @@ class Shell(object):
 
             elif directive == 'metadata load police/people/sdryxx -conf mapping.conf ':
                 print 'metadata load police/people/sdryxx -conf mapping.conf '
+            elif directive == '':
+                pass
             else:
                 print 'invalid command, please check and retry'
 
@@ -154,6 +142,7 @@ class Shell(object):
         if directive == 'login':
             userName = raw_input('please input user name:')
             passWord = raw_input('please input password:')
+            # todo read from config file
             if CheckUserPassword.check('users.xml', userName, passWord):
                 self.isLogIn = True
                 print 'login successfully'
@@ -165,4 +154,3 @@ class Shell(object):
 if __name__ == '__main__':
     shell = Shell()
     shell.execute()
-
