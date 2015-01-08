@@ -39,7 +39,7 @@ class Shell(object):
                 self.__metaDataGetPoliceType(directive)
 
             elif directive.startswith('metadata get police/people/'):
-                if self.dbHelper is not None:
+                if self.dbHelper.conn is not None:
                     data = self.dbHelper.query(
                         "select innerId,fieldName,fieldDecription  from tables where tableName='" + directive[len(
                             'metadata get police/people/'):] + "'")
@@ -55,9 +55,11 @@ class Shell(object):
                                 print '%s %s %s' % (str(data[index][0]).rstrip('\r\n'),
                                                     str(data[index][1]).rstrip('\r\n'),
                                                     str(data[index][2]).rstrip('\r\n'))
+                else:
+                    print 'Error with mysql, please check and retry'
 
             elif directive.startswith('metadata get police/items/'):
-                if self.dbHelper is not None:
+                if self.dbHelper.conn is not None:
                     data = self.dbHelper.query(
                         "select innerId,fieldName,fieldDecription  from tables where tableName='" + directive[len(
                             'metadata get police/items/'):] + "'")
@@ -73,9 +75,11 @@ class Shell(object):
                                 print '%s %s %s' % (str(data[index][0]).rstrip('\r\n'),
                                                     str(data[index][1]).rstrip('\r\n'),
                                                     str(data[index][2]).rstrip('\r\n'))
+                else:
+                    print 'Error with mysql, please check and retry'
 
             elif directive.startswith('metadata get police/events/'):
-                if self.dbHelper is not None:
+                if self.dbHelper.conn is not None:
                     data = self.dbHelper.query(
                         "select innerId,fieldName,fieldDecription  from tables where tableName='" + directive[len(
                             'metadata get police/events/'):] + "'")
@@ -91,9 +95,11 @@ class Shell(object):
                                 print '%s %s %s' % (str(data[index][0]).rstrip('\r\n'),
                                                     str(data[index][1]).rstrip('\r\n'),
                                                     str(data[index][2]).rstrip('\r\n'))
+                else:
+                    print 'Error with mysql, please check and retry'
 
             elif directive.startswith('metadata get police/orgs/'):
-                if self.dbHelper is not None:
+                if self.dbHelper.conn is not None:
                     data = self.dbHelper.query(
                         "select innerId,fieldName,fieldDecription  from tables where tableName='" + directive[len(
                             'metadata get police/orgs/'):] + "'")
@@ -109,9 +115,12 @@ class Shell(object):
                                 print '%s %s %s' % (str(data[index][0]).rstrip('\r\n'),
                                                     str(data[index][1]).rstrip('\r\n'),
                                                     str(data[index][2]).rstrip('\r\n'))
+                else:
+                    print 'Error with mysql, please check and retry'
+
 
             elif directive.startswith('metadata get police/locations/'):
-                if self.dbHelper is not None:
+                if self.dbHelper.conn is not None:
                     data = self.dbHelper.query(
                         "select innerId,fieldName,fieldDecription  from tables where tableName='" + directive[len(
                             'metadata get police/locations/'):] + "'")
@@ -127,6 +136,8 @@ class Shell(object):
                                 print '%s %s %s' % (str(data[index][0]).rstrip('\r\n'),
                                                     str(data[index][1]).rstrip('\r\n'),
                                                     str(data[index][2]).rstrip('\r\n'))
+                else:
+                    print 'Error with mysql, please check and retry'
 
             elif directive == 'metadata load police/people/sdryxx -conf mapping.conf ':
                 print 'metadata load police/people/sdryxx -conf mapping.conf '
@@ -136,13 +147,13 @@ class Shell(object):
                 print 'invalid command, please check and retry'
 
     def __metaDataGetPolice(self):
-        if self.dbHelper is not None:
+        if self.dbHelper.conn is not None:
             data = self.dbHelper.query('select distinct category from tables')
             for index in range(len(data)):
                 print str(index + 1) + '. ' + data[index][0]
 
     def __metaDataGetPoliceType(self, directive):
-        if self.dbHelper is not None:
+        if self.dbHelper.conn is not None:
             categoryDict = {
                 'people': '人员要素',
                 'items': '物品要素',
@@ -155,6 +166,8 @@ class Shell(object):
                     directive[len('metadata get police/'):]] + "' group by tableName")
             for index in range(len(data)):
                 print '%d.%s (%s)' % (index + 1, data[index][1].rstrip('\r\n'), data[index][0].rstrip('\r\n'))
+        else:
+            print 'Error with mysql, please check and retry'
 
     def __login__(self):
         print "input 'login' command to login and go on."
