@@ -3,6 +3,10 @@
 import CheckUserPassword
 import MetaDataIndustry
 import MysqlHelper
+import sys
+
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 
 class Shell(object):
@@ -13,6 +17,13 @@ class Shell(object):
         self.dbHelper = None
         # todo read from config file
         self.dbHelper = MysqlHelper.DB("localhost", 3306, "root", "", "metadata")
+        self.categoryDict = {
+            'people': '人员要素',
+            'items': '物品要素',
+            'events': '案(事)件要素',
+            'orgs': '机构要素',
+            'locations': '地点要素'
+        }
 
     def execute(self):
         directive = ''
@@ -24,7 +35,7 @@ class Shell(object):
 
             if directive == 'metadata industry -a' or directive == 'metadata industry -all':
                 # todo read from config file
-                metaDataTypeArray = MetaDataIndustry.getAllMetadataIndustryType('metadataIndustry.xml')
+                metaDataTypeArray = MetaDataIndustry.getAllMetadataIndustryType('./config/metadataIndustry.xml')
                 for index in range(len(metaDataTypeArray)):
                     print str(index + 1) + '. ' + metaDataTypeArray[index]
 
@@ -38,111 +49,41 @@ class Shell(object):
                     or directive == 'metadata get police/locations':
                 self.__metaDataGetPoliceType(directive)
 
-            elif directive.startswith('metadata get police/people/'):
-                if self.dbHelper.conn is not None:
-                    data = self.dbHelper.query(
-                        "select innerId,fieldName,fieldDecription  from tables where tableName='" + directive[len(
-                            'metadata get police/people/'):] + "'")
-                    if len(data) == 0:
-                        print 'no table named:' + directive[len('metadata get police/people/'):]
+            elif directive.startswith('metadata get police/people/') \
+                    or directive.startswith('metadata get police/items/') \
+                    or directive.startswith('metadata get police/events/') \
+                    or directive.startswith('metadata get police/orgs/') \
+                    or directive.startswith('metadata get police/locations/'):
+                directiveInArray = directive.split('/', 2)
+                if directiveInArray[1] in self.categoryDict.keys():
+                    if self.dbHelper.conn is not None:
+                        data = self.dbHelper.query(
+                            "select innerId,fieldName,fieldDecription  from tables where tableName='" +
+                            directiveInArray[2] + "' " + "and category='" + self.categoryDict[
+                                directiveInArray[1]] + "'")
+                        if len(data) == 0:
+                            print 'no table named:' + directive[len('metadata get police/people/'):]
+                        else:
+                            for index in range(len(data)):
+                                if str(data[index][0]) == '1':
+                                    print '%s %s %s is primary key!' % (str(data[index][0]),
+                                                                        str(data[index][1]),
+                                                                        str(data[index][2]))
+                                else:
+                                    print '%s %s %s' % (str(data[index][0]),
+                                                        str(data[index][1]),
+                                                        str(data[index][2]))
                     else:
-                        for index in range(len(data)):
-                            if str(data[index][0]) == '1':
-                                print '%s %s %s is primary key!' % (str(data[index][0]).rstrip('\r\n'),
-                                                                    str(data[index][1]).rstrip('\r\n'),
-                                                                    str(data[index][2]).rstrip('\r\n'))
-                            else:
-                                print '%s %s %s' % (str(data[index][0]).rstrip('\r\n'),
-                                                    str(data[index][1]).rstrip('\r\n'),
-                                                    str(data[index][2]).rstrip('\r\n'))
+                        print 'Error with mysql, please check and retry'
                 else:
-                    print 'Error with mysql, please check and retry'
-
-            elif directive.startswith('metadata get police/items/'):
-                if self.dbHelper.conn is not None:
-                    data = self.dbHelper.query(
-                        "select innerId,fieldName,fieldDecription  from tables where tableName='" + directive[len(
-                            'metadata get police/items/'):] + "'")
-                    if len(data) == 0:
-                        print 'no table named:' + directive[len('metadata get police/items/'):]
-                    else:
-                        for index in range(len(data)):
-                            if str(data[index][0]) == '1':
-                                print '%s %s %s is primary key!' % (str(data[index][0]).rstrip('\r\n'),
-                                                                    str(data[index][1]).rstrip('\r\n'),
-                                                                    str(data[index][2]).rstrip('\r\n'))
-                            else:
-                                print '%s %s %s' % (str(data[index][0]).rstrip('\r\n'),
-                                                    str(data[index][1]).rstrip('\r\n'),
-                                                    str(data[index][2]).rstrip('\r\n'))
-                else:
-                    print 'Error with mysql, please check and retry'
-
-            elif directive.startswith('metadata get police/events/'):
-                if self.dbHelper.conn is not None:
-                    data = self.dbHelper.query(
-                        "select innerId,fieldName,fieldDecription  from tables where tableName='" + directive[len(
-                            'metadata get police/events/'):] + "'")
-                    if len(data) == 0:
-                        print 'no table named:' + directive[len('metadata get police/events/'):]
-                    else:
-                        for index in range(len(data)):
-                            if str(data[index][0]) == '1':
-                                print '%s %s %s is primary key!' % (str(data[index][0]).rstrip('\r\n'),
-                                                                    str(data[index][1]).rstrip('\r\n'),
-                                                                    str(data[index][2]).rstrip('\r\n'))
-                            else:
-                                print '%s %s %s' % (str(data[index][0]).rstrip('\r\n'),
-                                                    str(data[index][1]).rstrip('\r\n'),
-                                                    str(data[index][2]).rstrip('\r\n'))
-                else:
-                    print 'Error with mysql, please check and retry'
-
-            elif directive.startswith('metadata get police/orgs/'):
-                if self.dbHelper.conn is not None:
-                    data = self.dbHelper.query(
-                        "select innerId,fieldName,fieldDecription  from tables where tableName='" + directive[len(
-                            'metadata get police/orgs/'):] + "'")
-                    if len(data) == 0:
-                        print 'no table named:' + directive[len('metadata get police/orgs/'):]
-                    else:
-                        for index in range(len(data)):
-                            if str(data[index][0]) == '1':
-                                print '%s %s %s is primary key!' % (str(data[index][0]).rstrip('\r\n'),
-                                                                    str(data[index][1]).rstrip('\r\n'),
-                                                                    str(data[index][2]).rstrip('\r\n'))
-                            else:
-                                print '%s %s %s' % (str(data[index][0]).rstrip('\r\n'),
-                                                    str(data[index][1]).rstrip('\r\n'),
-                                                    str(data[index][2]).rstrip('\r\n'))
-                else:
-                    print 'Error with mysql, please check and retry'
-
-
-            elif directive.startswith('metadata get police/locations/'):
-                if self.dbHelper.conn is not None:
-                    data = self.dbHelper.query(
-                        "select innerId,fieldName,fieldDecription  from tables where tableName='" + directive[len(
-                            'metadata get police/locations/'):] + "'")
-                    if len(data) == 0:
-                        print 'no table named:' + directive[len('metadata get police/locations/'):]
-                    else:
-                        for index in range(len(data)):
-                            if str(data[index][0]) == '1':
-                                print '%s %s %s is primary key!' % (str(data[index][0]).rstrip('\r\n'),
-                                                                    str(data[index][1]).rstrip('\r\n'),
-                                                                    str(data[index][2]).rstrip('\r\n'))
-                            else:
-                                print '%s %s %s' % (str(data[index][0]).rstrip('\r\n'),
-                                                    str(data[index][1]).rstrip('\r\n'),
-                                                    str(data[index][2]).rstrip('\r\n'))
-                else:
-                    print 'Error with mysql, please check and retry'
+                    print 'no table named:' + directiveInArray[2]
 
             elif directive == 'metadata load police/people/sdryxx -conf mapping.conf ':
                 print 'metadata load police/people/sdryxx -conf mapping.conf '
+
             elif directive == '':
                 pass
+
             else:
                 print 'invalid command, please check and retry'
 
@@ -154,15 +95,8 @@ class Shell(object):
 
     def __metaDataGetPoliceType(self, directive):
         if self.dbHelper.conn is not None:
-            categoryDict = {
-                'people': '人员要素',
-                'items': '物品要素',
-                'events': '案(事)件要素',
-                'orgs': '机构要素',
-                'locations': '地点要素'
-            }
             data = self.dbHelper.query(
-                "select tableDescription, tableName from tables  where category='" + categoryDict[
+                "select tableDescription, tableName from tables  where category='" + self.categoryDict[
                     directive[len('metadata get police/'):]] + "' group by tableName")
             for index in range(len(data)):
                 print '%d.%s (%s)' % (index + 1, data[index][1].rstrip('\r\n'), data[index][0].rstrip('\r\n'))
@@ -187,3 +121,4 @@ class Shell(object):
 if __name__ == '__main__':
     shell = Shell()
     shell.execute()
+    # print 'metadata get police/people/ABC/dsf'.split('/', 2)
