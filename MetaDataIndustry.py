@@ -18,6 +18,6 @@ def getAllMetadataIndustryType(configFilePath):
 
 
 if __name__ == '__main__':
-    types = getAllMetadataIndustryType('metadataIndustry.xml')
-    for type in types:
-        print type
+    industryTypes = getAllMetadataIndustryType('metadataIndustry.xml')
+    for industryType in industryTypes:
+        print industryType
