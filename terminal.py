@@ -54,29 +54,7 @@ class Shell(object):
                     or directive.startswith('metadata get police/events/') \
                     or directive.startswith('metadata get police/orgs/') \
                     or directive.startswith('metadata get police/locations/'):
-                directiveInArray = directive.split('/', 2)
-                if directiveInArray[1] in self.categoryDict.keys():
-                    if self.dbHelper.conn is not None:
-                        data = self.dbHelper.query(
-                            "select innerId,fieldName,fieldDecription  from tables where tableName='" +
-                            directiveInArray[2] + "' " + "and category='" + self.categoryDict[
-                                directiveInArray[1]] + "'")
-                        if len(data) == 0:
-                            print 'no table named:' + directive[len('metadata get police/people/'):]
-                        else:
-                            for index in range(len(data)):
-                                if str(data[index][0]) == '1':
-                                    print '%s %s %s is primary key!' % (str(data[index][0]),
-                                                                        str(data[index][1]),
-                                                                        str(data[index][2]))
-                                else:
-                                    print '%s %s %s' % (str(data[index][0]),
-                                                        str(data[index][1]),
-                                                        str(data[index][2]))
-                    else:
-                        print 'Error with mysql, please check and retry'
-                else:
-                    print 'no table named:' + directiveInArray[2]
+                self.__metaDataGetPoliceTypeTable(directive)
 
             elif directive == 'metadata load police/people/sdryxx -conf mapping.conf ':
                 print 'metadata load police/people/sdryxx -conf mapping.conf '
@@ -103,6 +81,31 @@ class Shell(object):
         else:
             print 'Error with mysql, please check and retry'
 
+    def __metaDataGetPoliceTypeTable(self, directive):
+        directiveInArray = directive.split('/', 2)
+        if directiveInArray[1] in self.categoryDict.keys():
+            if self.dbHelper.conn is not None:
+                data = self.dbHelper.query(
+                    "select innerId,fieldName,fieldDecription  from tables where tableName='" +
+                    directiveInArray[2] + "' " + "and category='" + self.categoryDict[
+                        directiveInArray[1]] + "'")
+                if len(data) == 0:
+                    print 'no table named:' + directive[len('metadata get police/people/'):]
+                else:
+                    for index in range(len(data)):
+                        if str(data[index][0]) == '1':
+                            print '%s %s %s is primary key!' % (str(data[index][0]),
+                                                                str(data[index][1]),
+                                                                str(data[index][2]))
+                        else:
+                            print '%s %s %s' % (str(data[index][0]),
+                                                str(data[index][1]),
+                                                str(data[index][2]))
+            else:
+                print 'Error with mysql, please check and retry'
+        else:
+            print 'no table named:' + directiveInArray[2]
+
     def __login__(self):
         print "input 'login' command to login and go on."
         directive = raw_input('HCOS>')  # get the directive from user
@@ -110,7 +113,7 @@ class Shell(object):
             userName = raw_input('please input user name:')
             passWord = raw_input('please input password:')
             # todo read from config file
-            if CheckUserPassword.check('users.xml', userName, passWord):
+            if CheckUserPassword.check('./config/users.xml', userName, passWord):
                 self.isLogIn = True
                 print 'login successfully'
             else:
