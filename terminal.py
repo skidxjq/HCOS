@@ -6,6 +6,7 @@ import MysqlHelper
 import sys
 import CONSTANT
 import readInXml
+import getpass
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -25,11 +26,12 @@ class Shell(object):
                                        readInXml.getElement(self.configFilePath, 'DatabaseConfig', 'dbName'))
 
     def execute(self):
-        directive = ''
         print CONSTANT.greeting
+
         while not self.isLogIn:
             self.__login__()
-        while self.isLogIn and directive != 'quit':
+
+        while self.isLogIn:
             directive = raw_input('HCOS>')
 
             if directive == 'metadata industry -a' or directive == 'metadata industry -all':
@@ -60,6 +62,10 @@ class Shell(object):
 
             elif directive == '':
                 pass
+
+            elif directive == 'quit':
+                print 'Bye'
+                break
 
             else:
                 print 'invalid command, please check and retry'
@@ -110,7 +116,7 @@ class Shell(object):
         directive = raw_input('HCOS>')  # get the directive from user
         if directive == 'login':
             userName = raw_input('please input user name:')
-            passWord = raw_input('please input password:')
+            passWord = getpass.getpass('please input password:')
             if CheckUserPassword.check(readInXml.getElement(self.configFilePath, 'usersConfig', 'userConfigFilePath'),
                                        userName, passWord):
                 self.isLogIn = True
@@ -118,6 +124,7 @@ class Shell(object):
             else:
                 self.isLogIn = False
                 print 'login failed, please check your input and try again!'
+
 
 
 if __name__ == '__main__':
