@@ -5,19 +5,24 @@ import MetaDataIndustry
 import MysqlHelper
 import sys
 import CONSTANT
+import readInXml
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
 
 class Shell(object):
-    # todo make it False
     isLogIn = False
 
-    def __init__(self):
+    def __init__(self, configFilePath):
+        self.configFilePath = configFilePath
         self.dbHelper = None
-        # todo read from config file
-        self.dbHelper = MysqlHelper.DB("localhost", 3306, "root", "", "metadata")
+        # self.dbHelper = MysqlHelper.DB("localhost", 3306, "root", "", "metadata")
+        self.dbHelper = MysqlHelper.DB(readInXml.getElement(self.configFilePath, 'DatabaseConfig', 'host'),
+                                       int(readInXml.getElement(self.configFilePath, 'DatabaseConfig', 'port')),
+                                       readInXml.getElement(self.configFilePath, 'DatabaseConfig', 'userName'),
+                                       "",
+                                       readInXml.getElement(self.configFilePath, 'DatabaseConfig', 'dbName'))
 
     def execute(self):
         directive = ''
@@ -28,8 +33,8 @@ class Shell(object):
             directive = raw_input('HCOS>')
 
             if directive == 'metadata industry -a' or directive == 'metadata industry -all':
-                # todo read from config file
-                metaDataTypeArray = MetaDataIndustry.getAllMetadataIndustryType('./config/metadataIndustry.xml')
+                metaDataTypeArray = MetaDataIndustry.getAllMetadataIndustryType(
+                    readInXml.getElement(self.configFilePath, 'metadataIndustry', 'filePath'))
                 for index in range(len(metaDataTypeArray)):
                     print str(index + 1) + '. ' + metaDataTypeArray[index]
 
@@ -106,8 +111,8 @@ class Shell(object):
         if directive == 'login':
             userName = raw_input('please input user name:')
             passWord = raw_input('please input password:')
-            # todo read from config file
-            if CheckUserPassword.check('./config/users.xml', userName, passWord):
+            if CheckUserPassword.check(readInXml.getElement(self.configFilePath, 'usersConfig', 'userConfigFilePath'),
+                                       userName, passWord):
                 self.isLogIn = True
                 print 'login successfully'
             else:
@@ -116,5 +121,5 @@ class Shell(object):
 
 
 if __name__ == '__main__':
-    shell = Shell()
+    shell = Shell('./config/config.xml')
     shell.execute()
