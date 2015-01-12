@@ -4,6 +4,7 @@ import CheckUserPassword
 import MetaDataIndustry
 import MysqlHelper
 import sys
+import CONSTANT
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -11,23 +12,16 @@ sys.setdefaultencoding("utf-8")
 
 class Shell(object):
     # todo make it False
-    isLogIn = True
+    isLogIn = False
 
     def __init__(self):
         self.dbHelper = None
         # todo read from config file
         self.dbHelper = MysqlHelper.DB("localhost", 3306, "root", "", "metadata")
-        self.categoryDict = {
-            'people': '人员要素',
-            'items': '物品要素',
-            'events': '案(事)件要素',
-            'orgs': '机构要素',
-            'locations': '地点要素'
-        }
 
     def execute(self):
         directive = ''
-        print '=' * 40 + '\n\t welcome\n' + '=' * 40
+        print CONSTANT.greeting
         while not self.isLogIn:
             self.__login__()
         while self.isLogIn and directive != 'quit':
@@ -74,7 +68,7 @@ class Shell(object):
     def __metaDataGetPoliceType(self, directive):
         if self.dbHelper.conn is not None:
             data = self.dbHelper.query(
-                "select tableDescription, tableName from tables  where category='" + self.categoryDict[
+                "select tableDescription, tableName from tables  where category='" + CONSTANT.categoryDict[
                     directive[len('metadata get police/'):]] + "' group by tableName")
             for index in range(len(data)):
                 print '%d.%s (%s)' % (index + 1, data[index][1].rstrip('\r\n'), data[index][0].rstrip('\r\n'))
@@ -83,11 +77,11 @@ class Shell(object):
 
     def __metaDataGetPoliceTypeTable(self, directive):
         directiveInArray = directive.split('/', 2)
-        if directiveInArray[1] in self.categoryDict.keys():
+        if directiveInArray[1] in CONSTANT.categoryDict.keys():
             if self.dbHelper.conn is not None:
                 data = self.dbHelper.query(
-                    "select innerId,fieldName,fieldDecription  from tables where tableName='" +
-                    directiveInArray[2] + "' " + "and category='" + self.categoryDict[
+                    "select innerId,fieldName,fieldDescription  from tables where tableName='" +
+                    directiveInArray[2] + "' " + "and category='" + CONSTANT.categoryDict[
                         directiveInArray[1]] + "'")
                 if len(data) == 0:
                     print 'no table named:' + directive[len('metadata get police/people/'):]

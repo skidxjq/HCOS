@@ -6,6 +6,7 @@ def check(configFilePath, userName, password):
     if not FileUtil.isFileValid(configFilePath, '.xml'):
         print 'user config file path is not valid, please check.'
         return
+
     domTree = xml.dom.minidom.parse(configFilePath)
     collection = domTree.documentElement
     users = collection.getElementsByTagName("user")
