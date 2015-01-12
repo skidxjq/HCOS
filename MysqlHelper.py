@@ -14,7 +14,8 @@ class DB():
         self.conn = self.__getConnection()
 
     def __del__(self):
-        self.conn.close()
+        if self.conn is not None:
+            self.conn.close()
 
     def __getConnection(self):
         conn = None
@@ -31,6 +32,11 @@ class DB():
             print "MYSQL ERROR %d: %s" % (e.args[0], e.args[1])
         return conn
 
+    def getCursor(self):
+        if self.conn is not None:
+            return self.conn.cursor()
+        return None
+
     def query(self, sqlString):
         if self.conn is not None:
             cursor = self.conn.cursor()
@@ -39,16 +45,3 @@ class DB():
             cursor.close()
             return returnData
 
-            # def update(self, sqlString):
-            # cursor = self.conn.cursor()
-            # cursor.execute(sqlString)
-            # self.conn.commit()
-            # cursor.close()
-            # self.conn.close()
-
-
-            # if __name__ == '__main__':
-            # dbHelper = DB("localhost", 3306, "root", "", "metadata")
-            # data = dbHelper.query("select tableDescription, tableName from tables  where category='人员要素' group by tableName")
-            # for index in range(len(data)):
-            # print '%s %s' % (data[index][1].rstrip('\r\n'), data[index][0].rstrip('\r\n'))

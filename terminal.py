@@ -118,4 +118,3 @@ class Shell(object):
 if __name__ == '__main__':
     shell = Shell()
     shell.execute()
-    # print 'metadata get police/people/ABC/dsf'.split('/', 2)

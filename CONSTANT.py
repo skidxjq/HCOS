@@ -6,4 +6,5 @@ categoryDict = {
     'orgs': '机构要素',
     'locations': '地点要素'
 }
+
 greeting = '=' * 40 + '\n\t welcome\n' + '=' * 40
